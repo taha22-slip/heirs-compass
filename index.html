@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Heir's Compass | विरासत मार्गदर्शक</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;600&family=Noto+Sans+Devanagari:wght@400;600&display=swap">
+<style>
+:root{--bg:#fbfaf7;--ink:#17252f;--mute:#566670;--card:#fff;--line:#d9dfe2;--brand:#0b5d4b;--on:#fff;--hi:#f2b705;--warn:#fff4d6;--warnink:#5a4300;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#10181d;--ink:#e8eef0;--mute:#9db0b8;--card:#18242b;--line:#2c3c45;--brand:#3fb59a;--on:#08201a;--hi:#f2b705;--warn:#3a2f0a;--warnink:#f5dc8a}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:18px/1.6 "Noto Sans","Noto Sans Devanagari",system-ui,sans-serif}
+main{max-width:640px;margin:0 auto;padding:16px}
+header{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:8px}
+h1{font-size:22px;margin:0;line-height:1.3}
+h2{font-size:21px;margin:8px 0 12px;line-height:1.4}
+h3{font-size:18px;margin:20px 0 8px}
+.lang{display:flex;border:1.5px solid var(--brand);border-radius:8px;overflow:hidden;flex:none}
+.lang button{border:0;background:none;color:var(--brand);padding:8px 14px;font:inherit;font-size:16px;cursor:pointer}
+.lang button[aria-pressed=true]{background:var(--brand);color:var(--on)}
+.sub{color:var(--mute);font-size:16px;margin:0 0 16px}
+.bar{height:6px;background:var(--line);border-radius:3px;margin:12px 0 20px}
+.bar i{display:block;height:100%;background:var(--brand);border-radius:3px;transition:width .25s}
+.opt{display:block;width:100%;text-align:left;background:var(--card);color:var(--ink);border:1.5px solid var(--line);border-radius:12px;padding:16px;margin:0 0 12px;font:inherit;cursor:pointer;min-height:64px}
+.opt:hover,.opt:focus-visible{border-color:var(--brand);outline:2px solid var(--brand);outline-offset:1px}
+.opt b{display:block;font-weight:600}
+.opt span{color:var(--mute);font-size:16px}
+.btn{background:var(--brand);color:var(--on);border:0;border-radius:10px;padding:12px 18px;font:inherit;font-weight:600;cursor:pointer;min-height:48px}
+.btn.alt{background:none;color:var(--brand);border:1.5px solid var(--brand)}
+.row{display:flex;gap:10px;flex-wrap:wrap;margin:12px 0}
+.tag{display:inline-block;background:var(--hi);color:#2b2100;border-radius:6px;padding:2px 10px;font-size:15px;font-weight:600}
+ul.chk{list-style:none;padding:0;margin:0}
+ul.chk li{display:flex;gap:12px;padding:10px 0;border-bottom:1px solid var(--line)}
+ul.chk input{width:24px;height:24px;flex:none;margin-top:4px;accent-color:var(--brand)}
+ol{padding-left:22px}
+li{margin-bottom:6px}
+.note{background:var(--warn);color:var(--warnink);border-radius:10px;padding:12px 14px;font-size:16px;margin:16px 0}
+textarea{width:100%;min-height:230px;font:inherit;font-size:16px;color:var(--ink);background:var(--card);border:1.5px solid var(--line);border-radius:10px;padding:12px}
+.back{background:none;border:0;color:var(--mute);font:inherit;font-size:16px;padding:8px 0;cursor:pointer;min-height:44px}
+</style>
+</head>
+<body>
+<main>
+<header>
+<h1 id="ttl"></h1>
+<div class="lang" role="group" aria-label="Language">
+<button id="bEN" aria-pressed="true">English</button><button id="bHI" aria-pressed="false">हिन्दी</button>
+</div>
+</header>
+<p class="sub" id="sub"></p>
+<div class="bar"><i id="prog"></i></div>
+<section id="view" aria-live="polite"></section>
+</main>
+<script>
+var T={
+en:{
+ttl:"Heir's Compass",
+sub:"A family member has passed away. Answer 3 simple questions and get your claim steps, document list and a letter to write.",
+start:"Start",
+q1:"How was the demat account held?",
+q1a:["Jointly, with another person","Single name (only the deceased)","I don't know"],
+q1s:["The other holder is still alive","Only one holder","Check the account statement or ask the DP"],
+q2:"Did the deceased register a nominee?",
+q2a:["Yes, a nominee is registered","No nominee","Not sure"],
+q2s:["The nominee is named in the account","Heirs will have to claim","Treat as no nominee, then confirm with the DP"],
+q3:"What is the approximate value of the shares?",
+q3a:["Below the simplified limit","Above the simplified limit","Not sure"],
+q3s:["Less paperwork","More legal papers needed","Ask the DP for the current value"],
+unk:"Not sure? That is fine. Pick the safest answer, and your DP (the broker where the demat account is held) can confirm.",
+back:"Go back",
+again:"Start again",
+step:"Question",
+rt:{joint:"Surviving joint holder claims",nom:"Nominee claims",low:"Legal heir claims (smaller value)",high:"Legal heir claims (larger value)"},
+why:{joint:"The shares pass to the surviving holder. This is the simplest route.",nom:"The nominee can claim without a court order, whatever the value. The nominee holds the shares for all legal heirs.",low:"With no nominee, the legal heirs claim. Below the simplified limit, no court order is needed.",high:"With no nominee and a larger value, extra legal proof is needed to protect all heirs."},
+steps:["Contact the DP where the deceased held the demat account (or find it from the latest statement or CDSL/NSDL e-mail).","Ask for the transmission request form and the list of documents.","Submit the form with the documents below.","The DP checks and moves the shares to your demat account. Ask for the timeline in writing."],
+docs:{
+base:["Transmission request form (from the DP)","Death certificate (attested or notarised copy)","Your ID proof and PAN","Your own demat account details (client master list)"],
+joint:[],
+nom:["Nominee's ID proof"],
+low:["Undertaking on plain paper (format from the DP)","Proof of relationship (birth or marriage certificate, Aadhaar)","No-objection letters from other legal heirs, if any"],
+high:["Affidavit and no-objection letter from other legal heirs","Any ONE of these: Will with notarised indemnity bond; legal heirship certificate with notarised indemnity bond; or succession certificate, probate or court order"]},
+h1:"Your route",h2:"What to do",h3:"Documents to gather",h4:"Letter to the DP",
+listen:"Listen",stop:"Stop",copy:"Copy letter",copied:"Copied",
+tipsHead:"Stay safe",
+tips:"Never pay an agent to 'unlock' shares. DPs do not need advance fees. Never share OTPs or passwords. Complaints can be filed at SCORES (scores.sebi.gov.in) if the DP delays.",
+disc:"This is general guidance, not legal advice. Rules and limits can change. Confirm the current limit and forms with your DP or on the SEBI and NSDL/CDSL websites.",
+nov:"Voice for this language is not available on this device.",
+letter:function(k){var p={joint:"as the surviving joint holder",nom:"as the registered nominee",low:"as a legal heir",high:"as a legal heir"}[k];return "To,\nThe Manager,\n[Name of Depository Participant]\n[Address]\n\nDate: [DD/MM/YYYY]\n\nSubject: Request for transmission of securities after death of account holder\n\nRespectfully,\n\nMy [relationship], [Name of deceased], held demat account no. [BO ID, 16 digits] with you. He/She passed away on [date of death].\n\nI am applying "+p+" to transfer the securities to my demat account no. [your BO ID].\n\nPlease share the transmission request form and the complete list of documents required, and the expected time to complete the process. I am enclosing the documents available with me.\n\nThank you.\n\n[Your name]\n[Phone number]\n[Address]"}
+},
+hi:{
+ttl:"विरासत मार्गदर्शक",
+sub:"परिवार के किसी सदस्य का निधन हो गया है। 3 आसान सवालों के जवाब दें और पाएं दावे के कदम, दस्तावेज़ों की सूची और लिखने के लिए पत्र।",
+start:"शुरू करें",
+q1:"डीमैट खाता कैसे था?",
+q1a:["संयुक्त, किसी और के साथ","अकेले मृतक के नाम","मुझे नहीं पता"],
+q1s:["दूसरे खाताधारक जीवित हैं","सिर्फ एक खाताधारक","खाते का स्टेटमेंट देखें या DP से पूछें"],
+q2:"क्या मृतक ने नॉमिनी दर्ज कराया था?",
+q2a:["हाँ, नॉमिनी दर्ज है","नॉमिनी नहीं है","पक्का नहीं पता"],
+q2s:["खाते में नॉमिनी का नाम है","वारिसों को दावा करना होगा","नॉमिनी नहीं मानें, फिर DP से पक्का करें"],
+q3:"शेयरों की लगभग कीमत कितनी है?",
+q3a:["आसान सीमा से कम","आसान सीमा से ज़्यादा","पक्का नहीं पता"],
+q3s:["कागज़ी काम कम","ज़्यादा कानूनी कागज़ चाहिए","DP से मौजूदा कीमत पूछें"],
+unk:"पक्का नहीं पता? कोई बात नहीं। सबसे सुरक्षित जवाब चुनें, और आपका DP (जिस ब्रोकर के पास डीमैट खाता है) पक्का बता देगा।",
+back:"पीछे जाएं",
+again:"फिर से शुरू करें",
+step:"सवाल",
+rt:{joint:"जीवित संयुक्त खाताधारक दावा करेंगे",nom:"नॉमिनी दावा करेंगे",low:"कानूनी वारिस दावा करेंगे (कम कीमत)",high:"कानूनी वारिस दावा करेंगे (ज़्यादा कीमत)"},
+why:{joint:"शेयर जीवित खाताधारक के नाम हो जाते हैं। यह सबसे आसान रास्ता है।",nom:"नॉमिनी बिना अदालती आदेश के दावा कर सकते हैं, कीमत चाहे जो हो। नॉमिनी सभी कानूनी वारिसों की ओर से शेयर रखते हैं।",low:"नॉमिनी न होने पर कानूनी वारिस दावा करते हैं। आसान सीमा से कम कीमत पर अदालती आदेश नहीं चाहिए।",high:"नॉमिनी न हो और कीमत ज़्यादा हो तो सभी वारिसों की सुरक्षा के लिए अतिरिक्त कानूनी सबूत चाहिए।"},
+steps:["जिस DP के पास मृतक का डीमैट खाता था, उससे संपर्क करें (पता न हो तो ताज़ा स्टेटमेंट या CDSL/NSDL की ईमेल देखें)।","ट्रांसमिशन रिक्वेस्ट फॉर्म और दस्तावेज़ों की सूची मांगें।","नीचे दिए दस्तावेज़ों के साथ फॉर्म जमा करें।","DP जांच कर शेयर आपके डीमैट खाते में भेजेगा। समय-सीमा लिखित में पूछ लें।"],
+docs:{
+base:["ट्रांसमिशन रिक्वेस्ट फॉर्म (DP से मिलेगा)","मृत्यु प्रमाणपत्र (सत्यापित या नोटरी कॉपी)","आपका पहचान प्रमाण और PAN","आपके अपने डीमैट खाते का विवरण (क्लाइंट मास्टर लिस्ट)"],
+joint:[],
+nom:["नॉमिनी का पहचान प्रमाण"],
+low:["सादे कागज़ पर वचनपत्र (प्रारूप DP से लें)","रिश्ते का प्रमाण (जन्म या विवाह प्रमाणपत्र, आधार)","अन्य कानूनी वारिसों का अनापत्ति पत्र, यदि हों"],
+high:["अन्य कानूनी वारिसों का शपथपत्र और अनापत्ति पत्र","इनमें से कोई एक: वसीयत के साथ नोटरी क्षतिपूर्ति बांड; वारिस प्रमाणपत्र के साथ नोटरी क्षतिपूर्ति बांड; या उत्तराधिकार प्रमाणपत्र, प्रोबेट या अदालती आदेश"]},
+h1:"आपका रास्ता",h2:"क्या करें",h3:"जमा करने के दस्तावेज़",h4:"DP को पत्र",
+listen:"सुनें",stop:"रोकें",copy:"पत्र कॉपी करें",copied:"कॉपी हो गया",
+tipsHead:"सावधान रहें",
+tips:"शेयर 'खुलवाने' के लिए किसी एजेंट को पैसे न दें। DP को अग्रिम फीस नहीं चाहिए। OTP या पासवर्ड किसी को न बताएं। DP देरी करे तो SCORES (scores.sebi.gov.in) पर शिकायत करें।",
+disc:"यह सामान्य जानकारी है, कानूनी सलाह नहीं। नियम और सीमाएं बदल सकती हैं। मौजूदा सीमा और फॉर्म DP से या SEBI और NSDL/CDSL की वेबसाइट पर पक्का करें।",
+nov:"इस डिवाइस पर इस भाषा की आवाज़ उपलब्ध नहीं है।",
+letter:function(k){var p={joint:"जीवित संयुक्त खाताधारक के रूप में",nom:"पंजीकृत नॉमिनी के रूप में",low:"कानूनी वारिस के रूप में",high:"कानूनी वारिस के रूप में"}[k];return "सेवा में,\nप्रबंधक महोदय,\n[डिपॉजिटरी पार्टिसिपेंट का नाम]\n[पता]\n\nदिनांक: [दिन/माह/वर्ष]\n\nविषय: खाताधारक के निधन के बाद प्रतिभूतियों के ट्रांसमिशन का अनुरोध\n\nमहोदय,\n\nमेरे [रिश्ता], [मृतक का नाम], का आपके पास डीमैट खाता संख्या [BO ID, 16 अंक] था। उनका निधन [मृत्यु की तारीख] को हो गया।\n\nमैं "+p+" प्रतिभूतियों को अपने डीमैट खाता संख्या [आपकी BO ID] में स्थानांतरित कराने का आवेदन करता/करती हूँ।\n\nकृपया ट्रांसमिशन रिक्वेस्ट फॉर्म, आवश्यक दस्तावेज़ों की पूरी सूची और प्रक्रिया पूरी होने का अनुमानित समय बताएं। मेरे पास उपलब्ध दस्तावेज़ संलग्न हैं।\n\nधन्यवाद।\n\n[आपका नाम]\n[फ़ोन नंबर]\n[पता]"}
+}};
+var L="en",S={q:0,a1:null,a2:null,a3:null},V=document.getElementById("view");
+function t(){return T[L]}
+function esc(s){return s.replace(/&/g,"&amp;").replace(/</g,"&lt;")}
+function setLang(l){L=l;document.documentElement.lang=l;speechSynthesis&&speechSynthesis.cancel();document.getElementById("bEN").setAttribute("aria-pressed",l=="en");document.getElementById("bHI").setAttribute("aria-pressed",l=="hi");render()}
+document.getElementById("bEN").onclick=function(){setLang("en")};
+document.getElementById("bHI").onclick=function(){setLang("hi")};
+function route(){if(S.a1==0)return"joint";if(S.a2==0)return"nom";return S.a3>=1?"high":"low"}
+function ask(n,key,val){return function(i){S["a"+n]=i;if(n==1&&i==0){S.q=9}else if(n==2&&i==0){S.q=9}else{S.q=n+1}render()}}
+function question(n){var x=t(),h="<p class='sub'>"+x.step+" "+n+" / 3</p><h2>"+x["q"+n]+"</h2>";for(var i=0;i<3;i++)h+="<button class='opt' data-i='"+i+"'><b>"+x["q"+n+"a"][i]+"</b><span>"+x["q"+n+"s"][i]+"</span></button>";h+="<p class='note'>"+x.unk+"</p>";if(n>1)h+="<button class='back' id='bk'>← "+x.back+"</button>";V.innerHTML=h;V.querySelectorAll(".opt").forEach(function(b){b.onclick=function(){ask(n)(+b.dataset.i)}});var bk=document.getElementById("bk");if(bk)bk.onclick=function(){S.q=n-1;render()};document.getElementById("prog").style.width=(n-1)/3*100+"%"}
+function listenText(k){var x=t();return x.rt[k]+". "+x.why[k]+" "+x.steps.join(" ")+" "+x.docs.base.concat(x.docs[k]).join(". ")+". "+x.disc}
+function result(){var x=t(),k=route(),d=x.docs.base.concat(x.docs[k]);var h="<h3 style='margin-top:4px'>"+x.h1+"</h3><p><span class='tag'>"+x.rt[k]+"</span></p><p>"+x.why[k]+"</p>";
+h+="<div class='row'><button class='btn' id='ls'>"+x.listen+"</button></div>";
+h+="<h3>"+x.h2+"</h3><ol>"+x.steps.map(function(s){return"<li>"+s+"</li>"}).join("")+"</ol>";
+h+="<h3>"+x.h3+"</h3><ul class='chk'>"+d.map(function(s,i){return"<li><input type='checkbox' id='c"+i+"'><label for='c"+i+"'>"+s+"</label></li>"}).join("")+"</ul>";
+h+="<h3>"+x.h4+"</h3><textarea id='lt'>"+esc(x.letter(k))+"</textarea><div class='row'><button class='btn alt' id='cp'>"+x.copy+"</button></div>";
+h+="<div class='note'><b>"+x.tipsHead+":</b> "+x.tips+"</div><p class='sub'>"+x.disc+"</p><div class='row'><button class='btn alt' id='ag'>"+x.again+"</button></div>";
+V.innerHTML=h;document.getElementById("prog").style.width="100%";
+var ls=document.getElementById("ls");ls.onclick=function(){if(!window.speechSynthesis){alert(x.nov);return}if(speechSynthesis.speaking){speechSynthesis.cancel();ls.textContent=x.listen;return}var u=new SpeechSynthesisUtterance(listenText(k));u.lang=L=="hi"?"hi-IN":"en-IN";u.rate=.9;u.onend=function(){ls.textContent=x.listen};speechSynthesis.speak(u);ls.textContent=x.stop};
+document.getElementById("cp").onclick=function(){var el=document.getElementById("lt");el.select();var b=this;try{navigator.clipboard.writeText(el.value).then(function(){b.textContent=x.copied})}catch(e){document.execCommand("copy");b.textContent=x.copied}};
+document.getElementById("ag").onclick=function(){S={q:0};speechSynthesis&&speechSynthesis.cancel();render()}}
+function render(){var x=t();document.getElementById("ttl").textContent=x.ttl;document.title=x.ttl;document.getElementById("sub").textContent=x.sub;
+if(S.q==0){document.getElementById("prog").style.width="0";V.innerHTML="<button class='btn' id='go' style='width:100%;font-size:19px'>"+x.start+"</button>";document.getElementById("go").onclick=function(){S={q:1};render()}}
+else if(S.q<=3)question(S.q);else result()}
+render();
+</script>
+</body>
+</html>
